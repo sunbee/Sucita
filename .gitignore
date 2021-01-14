@@ -1,0 +1,9 @@
+
+config.py
+*.ipynb
+images
+__pycache__
+.ipynb_checkpoints
+.vscode
+.mypy_cache
+.DS_Store
