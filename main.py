@@ -11,11 +11,12 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
+import config
 
 # Use: !openssl rand -hex 32 
-SECRET_KEY = "a3fd9fedc2a668a4dce66e5c06aef2ac832c1cd92e7e89e404499542b4d06cac"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRES_MINUTES = 30
+SECRET_KEY = config.SECRET_KEY
+ALGORITHM = config.ALGORITHM
+ACCESS_TOKEN_EXPIRES_MINUTES = config.ACCESS_TOKEN_EXPIRES_MINUTES
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
 
@@ -94,7 +95,7 @@ yojaka_db = {
         "username": "Ganapathi",
         "email": "bappa.morya@modak.com",
         "disabled": False,
-        "password_hashed": get_hashed_password("gajanana")
+        "password_hashed": get_hashed_password("g@j@n@n@")
     }
 }
 
@@ -185,7 +186,10 @@ async def login_user(form_data: OAuth2PasswordRequestForm = Depends()):
     return {"access_token": user.username, "token_type": "bearer"}
     """
 
-@app.post("/user/", response_model=UserOut, tags=["Manage User Accounts"])
+@app.post("/user/", 
+    response_model=UserOut, 
+    tags=["Manage User Accounts"], 
+    summary="Create a new user account. Hash the password.")
 async def add_user(user: UserIn):
     user_added = create_user(user)
     return user_added
@@ -315,7 +319,10 @@ async def get_current_active_user(current_user: UserInDB = Depends(get_current_u
         raise HTTPException(status_code=400, detail="{current_user.username} has an inactive account.")
     return current_user
 
-@app.get('/users/me', tags=['Manage User Accounts'], response_model=UserOut)
+@app.get('/users/me', 
+    response_model=UserOut, 
+    tags=['Manage User Accounts'], 
+    summary="Get the current logged-in user.")
 async def read_users_me(current_user: UserOut = Depends(get_current_active_user)):
     return current_user
 
@@ -330,11 +337,16 @@ async def get_CNN(model_name: CNN):
         ret = {"model": model_name, "message": "Reframe Recurrence"} 
     return ret
 
-@app.get('/item/{ID}', response_model = UserOut, tags=["Manage Records"], summary="Get a record by ID. Experimental!")
+@app.get('/item/{ID}', 
+    response_model = UserOut, 
+    tags=["Manage Records"], 
+    summary="Get a record by ID. Experimental!")
 async def get_item(ID: int, current_user: UserOut = Depends(get_current_active_user)):
     return current_user
 
-@app.get("/items", tags=["Manage Records"], summary="Find records in the collection.")
+@app.get("/items", 
+    tags=["Manage Records"], 
+    summary="Find records in the collection.")
 async def get_db(skip: int = 0, limit: int = 3, 
 q: Optional[List[str]] = Query(None, description="Pass the tags you want to retrieve images by.")):
     """
@@ -367,7 +379,10 @@ async def add_item(item: Item):
     print(new_item)
     return new_item # dict
 
-@app.put("/items/{ID}", response_model=Item_DB, tags=["Manage Records"], summary="Modify a record.")
+@app.put("/items/{ID}", 
+    response_model=Item_DB, 
+    tags=["Manage Records"], 
+    summary="Modify a record.")
 async def update_item(*, ID: int = Path(..., ge=1), item: Item_Update):
     """
     Modify a record with the specified ID. You can modify:
@@ -390,7 +405,10 @@ async def update_item(*, ID: int = Path(..., ge=1), item: Item_Update):
         selected_item["tags"] = item.tags
     return selected_item # dict
 
-@app.delete("/items/{ID}", response_model=Item_DB, tags=["Manage Records"], summary="Delete a record.")
+@app.delete("/items/{ID}", 
+    response_model=Item_DB, 
+    tags=["Manage Records"], 
+    summary="Delete a record.")
 async def delete_item(ID: int = Path(..., ge=1)):
     """
     Delete a record from the database. 
@@ -450,7 +468,10 @@ async def post_image(image: bytes = File(...)):
 
     return {"token": token_Firebase["idToken"], "fire": response}
 
-@app.post("/uploadfile", response_model=Item_DB, tags=["Manage Records"], summary="Create a new record.")
+@app.post("/uploadfile", 
+    response_model=Item_DB, 
+    tags=["Manage Records"], 
+    summary="Create a new record.")
 async def upload_image(image: UploadFile = File(...), tag: List[str] = Query(..., example="king")):
     """
     Add a new record to the collection. You will need:
