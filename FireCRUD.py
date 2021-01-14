@@ -21,8 +21,8 @@ def get_authToken():
     URL = authAPI_endPoint_signIn + API_KEY
     print(URL)
     payload = {
-        "email": "zarthustra7@gmail.com",
-        "password": "Kalpita1980",
+        "email": config.email,
+        "password": config.password,
         "returnSecureToken": True
     }
 
