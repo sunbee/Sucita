@@ -90,7 +90,7 @@ yojaka_db = {
         "disabled": True,
         "password_hashed": get_hashed_password("3!3ph@ntH3@d")
     },
-    "Gçanapathi": {
+    "Ganapathi": {
         "username": "Ganapathi",
         "email": "bappa.morya@modak.com",
         "disabled": False,
@@ -109,12 +109,11 @@ def hash_password(password: str):
 
 def create_user(user_in: UserIn):
     """
-    MARKED FOR REFACTORING
-
-    Make this operational to enable user account creation with hashed password.
-    Use the get_hashed_password function to securely store the user's password in the database.
+    Create a new user account and store the password securely in the database.
+    Use the get_hashed_password function to hash the password.
     """
-    user_in_DB = UserInDB(**user_in.dict(), password_hashed=hash_password(user_in.password))
+    user_in_DB = UserInDB(**user_in.dict(), password_hashed=get_hashed_password(user_in.password))
+    yojaka_db[user_in.username] = user_in_DB.dict()
     return user_in_DB
 
 class Item(BaseModel):
@@ -331,9 +330,9 @@ async def get_CNN(model_name: CNN):
         ret = {"model": model_name, "message": "Reframe Recurrence"} 
     return ret
 
-@app.get('/item/{ID}', tags=["Manage Records"], summary="Get a record by ID. Experimental!")
-async def get_item(ID: int, token: str = Depends(oauth2_scheme)):
-    return {"item": ID, "token": token}
+@app.get('/item/{ID}', response_model = UserOut, tags=["Manage Records"], summary="Get a record by ID. Experimental!")
+async def get_item(ID: int, current_user: UserOut = Depends(get_current_active_user)):
+    return current_user
 
 @app.get("/items", tags=["Manage Records"], summary="Find records in the collection.")
 async def get_db(skip: int = 0, limit: int = 3, 
