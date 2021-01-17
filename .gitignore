@@ -1,5 +1,6 @@
 
 config.py
+requirements_.txt
 *.ipynb
 images
 __pycache__

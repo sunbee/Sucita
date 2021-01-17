@@ -1,0 +1,9 @@
+bcrypt==3.2.0
+fastapi==0.61.1
+passlib==1.7.4
+pydantic==1.6.1
+python-jose==3.2.0
+requests @ file:///tmp/build/80754af9/requests_1592841827918/work
+SQLAlchemy @ file:///opt/concourse/worker/volumes/live/45657106-f60d-42e1-6501-7d65be3b36ab/volume/sqlalchemy_1593446313078/work
+uvicorn==0.12.1
+virtualenv==20.0.35
